@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KoreaTech 4년 수강 플래너</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f5;
+  --bg3: #f0ede6;
+  --text: #1a1a18;
+  --text2: #5a5a56;
+  --text3: #9a9a94;
+  --border: rgba(0,0,0,0.12);
+  --border2: rgba(0,0,0,0.20);
+  --border3: rgba(0,0,0,0.35);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --blue: #1d4ed8;
+  --green: #059669;
+  --red: #dc2626;
+  --amber: #d97706;
+  --teal: #0891b2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
+.app { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg3); }
+
+/* TOP BAR */
+.topbar {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border); background: var(--bg);
+  position: sticky; top: 0; z-index: 100; flex-wrap: wrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.logo { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.logo-dot { color: var(--blue); }
+.top-right { display: flex; gap: 10px; margin-left: auto; align-items: center; flex-wrap: wrap; }
+.sel-grp { display: flex; flex-direction: column; gap: 2px; }
+.sel-grp label { font-size: 10px; color: var(--text3); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.deg-tabs { display: flex; gap: 4px; }
+.deg-tab {
+  font-size: 11px; padding: 5px 11px; border-radius: 6px; cursor: pointer; font-family: var(--font);
+  border: 1px solid var(--border2); background: transparent; color: var(--text2);
+  transition: all .15s; font-weight: 500;
+}
+.deg-tab:hover { background: var(--bg2); }
+.deg-tab.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.major-sel {
+  font-size: 12px; padding: 5px 10px; border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--bg); color: var(--text); cursor: pointer; font-family: var(--font); min-width: 160px;
+}
+
+/* LAYOUT */
+.body-wrap { display: flex; flex: 1; overflow: hidden; }
+.sidebar {
+  width: 240px; min-width: 240px; background: var(--bg); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 12px 10px; display: flex; flex-direction: column; gap: 8px;
+  max-height: calc(100vh - 50px); position: sticky; top: 50px;
+}
+.mains { flex: 1; overflow-y: auto; padding: 14px; max-height: calc(100vh - 50px); }
+
+/* SIDEBAR COMPONENTS */
+.total-block {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 12px 14px;
+}
+.total-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+.total-num { font-size: 30px; font-weight: 700; }
+.total-of { font-size: 12px; color: var(--text3); }
+.total-pct { font-size: 11px; color: var(--text2); margin-left: auto; }
+.prog-bar { height: 5px; background: #e5e7eb; border-radius: 3px; overflow: hidden; margin-top: 2px; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+
+.sb-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.sb-card-head {
+  padding: 7px 11px; font-size: 11px; font-weight: 600; color: var(--text2);
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; letter-spacing: .02em;
+}
+.sb-card-head .badge {
+  font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 10px;
+  background: #eff6ff; color: var(--blue);
+}
+.sb-card-head .badge.ok { background: #ecfdf5; color: var(--green); }
+.sb-card-head .badge.warn { background: #fef2f2; color: var(--red); }
+.sb-body { padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; }
+
+.grp-label {
+  font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .04em;
+  text-transform: uppercase; margin: 5px 0 2px; padding-bottom: 3px;
+  border-bottom: 1px solid var(--border);
+}
+.grp-label:first-child { margin-top: 0; }
+
+.req-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.req-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.req-lbl { font-size: 11px; color: var(--text2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.req-sub { font-size: 9px; color: var(--text3); display: block; margin-top: 1px; white-space: normal; }
+.req-val { font-size: 10px; font-weight: 600; white-space: nowrap; }
+.req-val.ok { color: var(--green); }
+.req-val.warn { color: var(--red); }
+.req-val.part { color: var(--amber); }
+.req-mini-bar { height: 3px; background: #e5e7eb; border-radius: 2px; margin-bottom: 1px; overflow: hidden; }
+.req-mini-fill { height: 100%; border-radius: 2px; }
+
+.chk-item { display: flex; align-items: flex-start; gap: 6px; padding: 3px 0; }
+.chk-icon { font-size: 12px; flex-shrink: 0; width: 16px; text-align: center; margin-top: 1px; }
+.chk-name { font-size: 10px; color: var(--text2); flex: 1; line-height: 1.4; }
+.chk-cr { font-size: 10px; color: var(--text3); white-space: nowrap; }
+.chk-item.done .chk-name { color: var(--green); }
+.chk-item.done .chk-icon { color: var(--green); }
+
+.warn-list { padding: 6px 10px; display: flex; flex-direction: column; gap: 5px; }
+.warn-line {
+  font-size: 10px; color: #7c2d12; background: #fff7ed; border-left: 2px solid var(--amber);
+  padding: 5px 8px; border-radius: 0 4px 4px 0; line-height: 1.4;
+}
+.ok-line {
+  font-size: 11px; color: var(--green); text-align: center; padding: 8px;
+  background: #ecfdf5; border-radius: 6px; margin: 4px 0;
+}
+
+/* SEMESTER GRID */
+.sem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sem-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+  transition: box-shadow .2s;
+}
+.sem-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.sem-card.ipp { border-color: var(--teal); }
+.sem-card.over { border-color: var(--amber); }
+.sem-card.ipp.over { border-color: var(--teal); }
+.sem-hdr {
+  display: flex; align-items: center; gap: 6px; padding: 8px 11px;
+  border-bottom: 1px solid var(--border); background: var(--bg2);
+}
+.sem-yr { font-size: 12px; font-weight: 600; color: var(--text); }
+.sem-cr { font-size: 10px; color: var(--text2); margin-left: auto; }
+.sem-cr.over { color: var(--amber); font-weight: 600; }
+.ipp-pill { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; background: var(--teal); color: #fff; }
+.ipp-btn {
+  font-size: 9px; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-family: var(--font);
+  border: 1px solid var(--border2); background: transparent; color: var(--text2);
+  transition: all .15s;
+}
+.ipp-btn:hover:not(:disabled) { background: var(--bg3); }
+.ipp-btn.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.ipp-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.sem-body { padding: 8px 9px; min-height: 64px; display: flex; flex-direction: column; gap: 3px; }
+.ipp-banner {
+  padding: 12px 10px; text-align: center; background: rgba(8,145,178,.07);
+  border-radius: 7px; color: var(--teal); font-size: 11px; line-height: 1.6; margin-bottom: 3px;
+}
+.chip {
+  display: flex; align-items: center; gap: 5px; padding: 4px 8px;
+  border-radius: 6px; background: var(--bg2); border: 1px solid var(--border);
+  transition: border-color .15s;
+}
+.chip:hover { border-color: var(--border2); }
+.chip.gd-warn { border-color: #fbbf24; background: #fffbeb; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.chip-name { font-size: 11px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip-cr { font-size: 10px; color: var(--text2); flex-shrink: 0; }
+.chip-del {
+  font-size: 14px; line-height: 1; cursor: pointer; color: var(--text3);
+  background: none; border: none; padding: 0 2px; flex-shrink: 0;
+}
+.chip-del:hover { color: var(--red); }
+.add-btn {
+  display: flex; align-items: center; gap: 5px; padding: 5px 8px;
+  font-size: 11px; color: var(--text3); cursor: pointer; border-radius: 6px;
+  border: 1px dashed var(--border2); background: transparent; width: 100%; margin-top: 3px;
+  transition: all .15s; font-family: var(--font);
+}
+.add-btn:hover { background: var(--bg2); color: var(--text2); border-color: var(--blue); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center; z-index: 999;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  width: 92%; max-width: 540px; max-height: 88vh;
+  background: var(--bg); border-radius: var(--radius-lg); border: 1px solid var(--border2);
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.modal-hdr {
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.modal-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.modal-close {
+  margin-left: auto; font-size: 20px; cursor: pointer; color: var(--text3);
+  background: none; border: none; line-height: 1; transition: color .15s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-search { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+.modal-search input {
+  flex: 1; padding: 7px 11px; font-size: 12px; border: 1px solid var(--border2);
+  border-radius: 7px; background: var(--bg2); color: var(--text); font-family: var(--font);
+  outline: none; transition: border-color .15s;
+}
+.modal-search input:focus { border-color: var(--blue); }
+.modal-ipp-btn {
+  font-size: 10px; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: var(--font);
+  border: 1px solid var(--teal); background: transparent; color: var(--teal); white-space: nowrap;
+  transition: all .15s;
+}
+.modal-ipp-btn:hover { background: var(--teal); color: #fff; }
+.modal-filters {
+  display: flex; gap: 5px; padding: 8px 14px; overflow-x: auto; border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+.modal-filters::-webkit-scrollbar { display: none; }
+.fpill {
+  font-size: 10px; padding: 4px 10px; border-radius: 20px; cursor: pointer; flex-shrink: 0;
+  border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: var(--font);
+  white-space: nowrap; transition: all .15s;
+}
+.fpill:hover { background: var(--bg2); }
+.fpill.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.modal-list { overflow-y: auto; flex: 1; }
+.modal-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; cursor: pointer; transition: background .12s; }
+.modal-item:hover { background: var(--bg2); }
+.mi-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mi-info { flex: 1; min-width: 0; }
+.mi-name { font-size: 12px; color: var(--text); }
+.mi-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.mi-cr { font-size: 12px; font-weight: 600; color: var(--text); flex-shrink: 0; }
+.mi-req { font-size: 9px; padding: 1px 5px; border-radius: 3px; background: #fee2e2; color: #991b1b; margin-left: 4px; }
+.mi-gd { font-size: 9px; padding: 1px 5px; border-radius: 3px; background: #fef3c7; color: #92400e; margin-left: 4px; }
+.mi-added { font-size: 9px; color: var(--green); margin-left: 4px; }
+.modal-empty { padding: 24px; text-align: center; color: var(--text3); font-size: 12px; }
+.modal-section-hdr { padding: 8px 14px; font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .04em; background: var(--bg2); border-bottom: 1px solid var(--border); }
+
+@media (max-width: 720px) {
+  .sem-grid { grid-template-columns: 1fr; }
+  .sidebar { width: 100%; min-width: 0; max-height: none; position: relative; top: 0; }
+  .body-wrap { flex-direction: column; }
+}
+@media print {
+  .topbar { position: relative; }
+  .sidebar { max-height: none; position: relative; top: 0; }
+  .mains { max-height: none; }
+  .add-btn, .chip-del, .ipp-btn { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">🎓 <span class="logo-dot">KoreaTech</span> 4년 수강 플래너</div>
+    <div class="top-right">
+      <div class="sel-grp">
+        <label>학위</label>
+        <div class="deg-tabs" id="degTabs"></div>
+      </div>
+      <div class="sel-grp">
+        <label>학부(과) 선택</label>
+        <select class="major-sel" id="majorSel" onchange="setMajor(this.value)"></select>
+      </div>
+    </div>
+  </div>
+  <div class="body-wrap">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="mains">
+      <div class="sem-grid" id="semGrid"></div>
+    </div>
+  </div>
+</div>
+<div id="modalWrap"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const DEGREE_CONFIG = {
+  '공학사':  { total:150, 교양:47, HRD:16, 전공:70, 자유:7,  mscReq:22 },
+  '경영학사':{ total:140, 교양:37, HRD:16, 전공:66, 자유:7,  mscReq:9  },
+  '고용학사':{ total:140, 교양:37, HRD:16, 전공:70, 자유:7,  mscReq:9  },
+};
+
+const CC = {
+  kor:'#4338ca', eng:'#2563eb', msc:'#0891b2',
+  insung:'#d97706', arts:'#7c3aed', social:'#0369a1',
+  history:'#b45309', nature:'#059669', gen_free:'#6b7280',
+  hrd_r:'#dc2626', hrd_e:'#f97316',
+  mf:'#7c3aed', mr:'#9333ea', me:'#a855f7',
+  dr:'#6366f1', de:'#818cf8', free:'#9ca3af',
+};
+const CL = {
+  kor:'국어', eng:'영어', msc:'수리적사고',
+  insung:'인성과 소양', arts:'예술과 문학', social:'사회와 심리',
+  history:'역사와 철학', nature:'자연과 인간', gen_free:'교양선택',
+  hrd_r:'HRD 필수', hrd_e:'HRD 선택',
+  mf:'전공기초', mr:'전공필수', me:'전공선택',
+  dr:'학부공통필수', de:'학부공통선택', free:'자유선택',
+};
+
+const COURSES = [
+  // 국어
+  {c:'KOR001',n:'창의적사고와글쓰기',cr:3,cat:'kor'},
+  {c:'KOR002',n:'발표와토론',cr:3,cat:'kor'},
+  {c:'KOR003',n:'심화글쓰기',cr:3,cat:'kor'},
+  // 영어
+  {c:'LAN316',n:'영어읽기와쓰기',cr:3,cat:'eng'},
+  {c:'LAN317',n:'기초영어읽기와쓰기',cr:3,cat:'eng'},
+  {c:'LAN338',n:'영어회화',cr:1,cat:'eng'},
+  {c:'LAN324',n:'영어청해',cr:1,cat:'eng'},
+  {c:'MAE241',n:'영어회화1',cr:1,cat:'eng'},
+  {c:'MAE242',n:'영어회화2',cr:1,cat:'eng'},
+  {c:'MAE243',n:'영어회화3',cr:1,cat:'eng'},
+  {c:'MAE244',n:'영어회화4',cr:1,cat:'eng'},
+  {c:'MAE245',n:'대학영어1',cr:2,cat:'eng'},
+  {c:'MAE246',n:'대학영어2',cr:2,cat:'eng'},
+  {c:'MAE247',n:'대학영어3',cr:2,cat:'eng'},
+  {c:'MAE248',n:'대학영어4',cr:2,cat:'eng'},
+  // MSC 수학
+  {c:'BSM102',n:'대학수학',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM101',n:'수학적사고',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM105',n:'기초미적분학',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM110',n:'미적분학',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM091',n:'공학수학1',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM096',n:'공학수학2',cr:3,cat:'msc',sub:'math'},
+  {c:'BSM463',n:'공학확률통계',cr:3,cat:'msc',sub:'math'},
+  // MSC 기초과학
+  {c:'BSM317',n:'일반물리학1',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM316',n:'물리실험',cr:1,cat:'msc',sub:'sci'},
+  {c:'BSM315',n:'물리실험1',cr:1,cat:'msc',sub:'sci'},
+  {c:'BSM333',n:'일반물리학2',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM332',n:'물리실험2',cr:1,cat:'msc',sub:'sci'},
+  {c:'BSM314',n:'물리적사고1',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM331',n:'물리적사고2',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM717',n:'일반화학1',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM716',n:'화학실험',cr:1,cat:'msc',sub:'sci'},
+  {c:'BSM715',n:'화학실험1',cr:1,cat:'msc',sub:'sci'},
+  {c:'BSM718',n:'일반화학2',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM714',n:'화학적사고1',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM727',n:'화학적사고2',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM731',n:'일반생물학',cr:3,cat:'msc',sub:'sci'},
+  {c:'BSM729',n:'생물학적사고',cr:3,cat:'msc',sub:'sci'},
+  // MSC 전산
+  {c:'BSM631',n:'문제해결과프로그래밍',cr:3,cat:'msc',sub:'cs'},
+  {c:'BSM640',n:'컴퓨팅사고',cr:3,cat:'msc',sub:'cs'},
+  // 인성과 소양
+  {c:'SHA102',n:'대학생활과비전',cr:1,cat:'insung'},
+  {c:'GEK001',n:'견행학',cr:1,cat:'insung'},
+  {c:'PE001',n:'체육1',cr:1,cat:'insung'},
+  {c:'PE002',n:'체육2',cr:1,cat:'insung'},
+  {c:'SHA872',n:'진로선택과취창업준비',cr:1,cat:'insung'},
+  {c:'SME331',n:'미래탐색과생애설계',cr:3,cat:'insung'},
+  {c:'SHB411',n:'사회봉사',cr:1,cat:'insung'},
+  {c:'LAN914',n:'태권도:문화/수련그리고철학',cr:1,cat:'insung'},
+  // 예술과 문학
+  {c:'SHB531',n:'예술과철학의만남',cr:3,cat:'arts'},
+  {c:'LAN152',n:'우리문학의이해',cr:3,cat:'arts'},
+  {c:'SHB312',n:'서양음악의이해',cr:3,cat:'arts'},
+  {c:'SHA542',n:'영화예술의이해',cr:3,cat:'arts'},
+  {c:'SHB494',n:'세계문학의이해',cr:3,cat:'arts'},
+  {c:'LAN135',n:'동아시아명저읽기',cr:3,cat:'arts'},
+  {c:'SHB472',n:'사진촬영과감상',cr:3,cat:'arts'},
+  {c:'LAN917',n:'한국의관용표현과문화이해',cr:3,cat:'arts'},
+  // 사회와 심리
+  {c:'SHA513',n:'사회학의이해',cr:3,cat:'social'},
+  {c:'SHA314',n:'심리학의이해',cr:3,cat:'social'},
+  {c:'SHA413',n:'법학의이해',cr:3,cat:'social'},
+  {c:'SHA853',n:'정치학의이해',cr:3,cat:'social'},
+  {c:'CON331',n:'기술과경제',cr:3,cat:'social'},
+  {c:'LAN482',n:'언어와심리',cr:3,cat:'social'},
+  {c:'SHA832',n:'여성학의이해',cr:3,cat:'social'},
+  {c:'CON140',n:'젠더와문화',cr:3,cat:'social'},
+  {c:'CON141',n:'젠더와인간',cr:3,cat:'social'},
+  {c:'SME150',n:'비즈니스영어',cr:3,cat:'social'},
+  // 역사와 철학
+  {c:'SHA213',n:'철학의이해',cr:3,cat:'history'},
+  {c:'SHA987',n:'AI시대의윤리',cr:3,cat:'history'},
+  {c:'CON351',n:'비판적사고와토론',cr:3,cat:'history'},
+  {c:'SHA373',n:'역사로배우는수학',cr:3,cat:'history'},
+  {c:'LAN913',n:'세계의민속과신화',cr:3,cat:'history'},
+  {c:'LAN521',n:'생성형AI와글쓰기',cr:3,cat:'history'},
+  {c:'SHA853h',n:'한국사',cr:3,cat:'history'},
+  {c:'CON351b',n:'삶과죽음',cr:3,cat:'history'},
+  // 자연과 인간
+  {c:'NAT152',n:'대기환경과기후',cr:3,cat:'nature'},
+  {c:'NAT172',n:'물리학의세계',cr:3,cat:'nature'},
+  {c:'NAT230',n:'화학의세계',cr:3,cat:'nature'},
+  {c:'NAT240',n:'생물학의세계',cr:3,cat:'nature'},
+  {c:'NAT211',n:'4차산업혁명과과학',cr:3,cat:'nature'},
+  {c:'CON203',n:'생활속의데이터',cr:3,cat:'nature'},
+  {c:'CON101',n:'인간의삶과적정기술',cr:3,cat:'nature'},
+  {c:'NAT220',n:'언어학의이해',cr:3,cat:'nature'},
+  {c:'NAT200',n:'생명과학의이해',cr:3,cat:'nature'},
+  {c:'CON321',n:'기술과사회',cr:3,cat:'nature'},
+  {c:'NAT190',n:'문명과수학',cr:3,cat:'nature'},
+  {c:'NAT181',n:'생활속의화학',cr:3,cat:'nature'},
+  // 교양선택
+  {c:'KMC270',n:'기초수학',cr:3,cat:'gen_free'},
+  {c:'KMC280',n:'기초확률및통계',cr:3,cat:'gen_free'},
+  {c:'KMC290',n:'현대물리학',cr:3,cat:'gen_free'},
+  {c:'LAN613',n:'일본어1',cr:3,cat:'gen_free'},
+  {c:'LAN713',n:'중국어1',cr:3,cat:'gen_free'},
+  {c:'LAN752',n:'스페인어',cr:3,cat:'gen_free'},
+  {c:'KMC140',n:'인문사회K-MOOC',cr:1,cat:'gen_free'},
+  {c:'LAN520',n:'실용글쓰기',cr:2,cat:'gen_free'},
+  {c:'SHB283',n:'생존수영',cr:1,cat:'gen_free'},
+  {c:'SME495',n:'금융시장의이해',cr:2,cat:'gen_free'},
+  // HRD 필수
+  {c:'TEA100',n:'HRD개론',cr:2,cat:'hrd_r'},
+  {c:'HRD050',n:'경력개발이해와상담',cr:2,cat:'hrd_r'},
+  {c:'CCT015',n:'HRD현장실습',cr:2,cat:'hrd_r'},
+  {c:'HRD151',n:'교수설계및교육방법',cr:3,cat:'hrd_r'},
+  {c:'HRD012',n:'직업능력개발훈련평가',cr:3,cat:'hrd_r'},
+  // HRD 선택
+  {c:'HRD021',n:'NCS기반프로그램개발',cr:2,cat:'hrd_e'},
+  {c:'HRD040',n:'국외기술교육봉사',cr:2,cat:'hrd_e'},
+  {c:'HRD161',n:'에듀테크개론',cr:2,cat:'hrd_e'},
+  {c:'HRD172',n:'창의력개발실습',cr:2,cat:'hrd_e'},
+  {c:'HRD262',n:'리더십이해와개발',cr:2,cat:'hrd_e'},
+  {c:'HRD430',n:'HRD데이터분석기법',cr:2,cat:'hrd_e'},
+  // 자유선택
+  {c:'SHC122',n:'H&C',cr:2,cat:'free'},
+  {c:'CON361',n:'융합세미나',cr:3,cat:'free'},
+  {c:'BSM127',n:'온라인기초수학',cr:1,cat:'free'},
+  {c:'KMC240',n:'온라인기초미적분학',cr:1,cat:'free'},
+  {c:'KMC250',n:'온라인기초물리학',cr:1,cat:'free'},
+  {c:'KMC260',n:'온라인일반물리학',cr:1,cat:'free'},
+  {c:'SHB411b',n:'사회봉사(자유)',cr:1,cat:'free'},
+  // IPP 현장실습
+  {c:'MAZ141',n:'현장실습(IPP 4개월)',cr:6,cat:'mr',ipp:true},
+  {c:'MAZ142',n:'현장실습(IPP 6개월)',cr:9,cat:'mr',ipp:true},
+  // 전공기초 공통
+  {c:'CCT610',n:'공학수학1',cr:3,cat:'mf'},
+  {c:'CCT620',n:'공학수학2',cr:3,cat:'mf'},
+  {c:'CCT650',n:'공학확률통계',cr:3,cat:'mf'},
+  {c:'CCT630',n:'선형대수학',cr:3,cat:'mf'},
+  {c:'CCT670',n:'미분방정식',cr:3,cat:'mf'},
+  {c:'CCT640',n:'수치해석및실습',cr:3,cat:'mf'},
+  // 기계공학부
+  {c:'MEB700',n:'전공탐색',cr:1,cat:'mf'},
+  {c:'MEB302',n:'정역학',cr:3,cat:'mf'},
+  {c:'MEF666',n:'창의적공학설계(AD)',cr:2,cat:'mf'},
+  {c:'MTB327',n:'동역학',cr:3,cat:'mr'},
+  {c:'MTB332',n:'유체역학',cr:3,cat:'mr'},
+  {c:'MTB494',n:'열역학',cr:3,cat:'mr'},
+  {c:'MTB403',n:'기계공작법',cr:3,cat:'mr'},
+  {c:'MTB392',n:'CAD/CAM및실습',cr:3,cat:'mr'},
+  {c:'MEG876',n:'공학설계(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MEG882',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MEG892',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MEG895',n:'졸업설계(캡스톤)',cr:6,cat:'dr',gd:true},
+  {c:'MEB601',n:'수치해석및실습',cr:3,cat:'de'},
+  {c:'MEC366',n:'기계재료학',cr:3,cat:'de'},
+  {c:'MTB570',n:'인공지능개론',cr:3,cat:'de'},
+  {c:'MTC620',n:'로봇기구설계및해석',cr:3,cat:'de'},
+  {c:'MEC591',n:'기계공학세미나',cr:1,cat:'dr'},
+  {c:'MEF453',n:'제어공학',cr:3,cat:'me'},
+  {c:'MTB393',n:'3DCAD및실습',cr:3,cat:'me'},
+  {c:'MTC650',n:'최적화와실험계획법',cr:3,cat:'me'},
+  {c:'MTF430',n:'기계제어공학및실험2',cr:3,cat:'me'},
+  {c:'MEF440',n:'기계학습',cr:3,cat:'me'},
+  {c:'MEF641',n:'생산제조시스템',cr:3,cat:'me'},
+  {c:'MES411',n:'자율주행자동차공학',cr:3,cat:'me'},
+  {c:'MTC630',n:'제조인공지능',cr:3,cat:'de'},
+  {c:'MTA300',n:'메카트로닉스기초실습',cr:3,cat:'dr'},
+  // 메카트로닉스공학부
+  {c:'MTA700',n:'전공탐색(메카)',cr:1,cat:'mf'},
+  {c:'MTA443',n:'정역학(메카)',cr:2,cat:'mf'},
+  {c:'MTA301',n:'메카트로닉스기초실습',cr:3,cat:'mf'},
+  {c:'MTB391',n:'CAD설계및실습',cr:2,cat:'dr'},
+  {c:'MTC394',n:'CAD설계및실습2',cr:2,cat:'mr'},
+  {c:'MTE850',n:'기계제어공학및실험1',cr:3,cat:'mr'},
+  {c:'MTC612',n:'전산유동해석',cr:2,cat:'mr'},
+  {c:'MTC743',n:'공학설계Ⅰ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'MTC753',n:'공학설계Ⅱ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'MTC905',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MTC906',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'dr',gd:true},
+  // 전기전자통신공학부
+  {c:'IFE700',n:'전공탐색(전전통)',cr:1,cat:'mf'},
+  {c:'IFE157',n:'창의적공학설계(AD)',cr:2,cat:'mf'},
+  {c:'IFA101',n:'기초전기전자실습',cr:3,cat:'mr'},
+  {c:'IFA243',n:'전기공학실습Ⅰ',cr:3,cat:'mr'},
+  {c:'IFA253',n:'전기공학실습Ⅱ',cr:3,cat:'mr'},
+  {c:'IFA445',n:'제어공학(전기)',cr:4,cat:'mr'},
+  {c:'IFB110',n:'전기회로실습',cr:2,cat:'mr'},
+  {c:'IFB163',n:'디지털공학및실습',cr:4,cat:'mr'},
+  {c:'IFB172',n:'디지털시스템설계및실습',cr:3,cat:'mr'},
+  {c:'IFB233',n:'전자CAD실습',cr:2,cat:'mr'},
+  {c:'IFB411',n:'마이크로프로세서및실습Ⅰ',cr:3,cat:'mr'},
+  {c:'IFC110',n:'기초ICT공학및실습',cr:3,cat:'mr'},
+  {c:'IFC122',n:'회로이론',cr:3,cat:'mr'},
+  {c:'IFC125',n:'회로이론실습',cr:1,cat:'mr'},
+  {c:'IFC131',n:'디지틀공학및실습',cr:3,cat:'mr'},
+  {c:'IFC295',n:'객체지향프로그래밍',cr:3,cat:'mr'},
+  {c:'IFA462',n:'공학설계Ⅰ(캡스톤)',cr:1,cat:'mr',gd:true},
+  {c:'IFA472',n:'공학설계Ⅱ(캡스톤)',cr:1,cat:'mr',gd:true},
+  {c:'IFA475',n:'공학설계(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'IFA495',n:'졸업설계(캡스톤)',cr:6,cat:'mr',gd:true},
+  {c:'IFB372',n:'공학설계Ⅰ(캡스톤)',cr:1,cat:'mr',gd:true},
+  {c:'IFB382',n:'공학설계Ⅱ(캡스톤)',cr:1,cat:'mr',gd:true},
+  {c:'IFB405',n:'졸업설계(캡스톤)',cr:6,cat:'mr',gd:true},
+  {c:'IFC452',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'IFC462',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'IFC466',n:'졸업설계(캡스톤)',cr:6,cat:'mr',gd:true},
+  {c:'IFE240',n:'반도체소자',cr:3,cat:'de'},
+  {c:'IFE601',n:'스마트그리드공학및실습',cr:3,cat:'de'},
+  {c:'IFE610',n:'반도체장비공학',cr:3,cat:'de'},
+  {c:'IFE412',n:'마이크로그리드공학및실습',cr:3,cat:'de'},
+  {c:'IFE450',n:'RF회로설계',cr:3,cat:'de'},
+  {c:'IFA630',n:'전자회로응용및실습',cr:3,cat:'me'},
+  {c:'IFB296',n:'디지털신호처리및실습',cr:4,cat:'me'},
+  {c:'IFB481',n:'딥러닝및실습',cr:3,cat:'me'},
+  {c:'IFC313',n:'네트워크프로그래밍및실습',cr:3,cat:'me'},
+  {c:'IFB366',n:'비젼시스템및실습',cr:4,cat:'me'},
+  // 컴퓨터공학부
+  {c:'CSE700',n:'전공탐색(컴공)',cr:1,cat:'mf'},
+  {c:'CSE111',n:'기초전기전자및실습',cr:3,cat:'mf'},
+  {c:'CSE115',n:'창의적공학설계(AD)',cr:2,cat:'mf'},
+  {c:'CSE110',n:'창의적공학설계',cr:3,cat:'dr'},
+  {c:'CSE112',n:'C프로그래밍Ⅰ',cr:3,cat:'dr'},
+  {c:'CSE113',n:'C프로그래밍Ⅱ',cr:3,cat:'dr'},
+  {c:'CSE114',n:'컴퓨터공학입문',cr:3,cat:'dr'},
+  {c:'CSE120',n:'컴퓨터시스템기초설계',cr:3,cat:'dr'},
+  {c:'CSE121',n:'디지털공학및실습',cr:3,cat:'dr'},
+  {c:'CSE123',n:'자료구조및실습',cr:3,cat:'dr'},
+  {c:'CSE124',n:'마이크로프로세서및실습',cr:3,cat:'dr'},
+  {c:'CSE125',n:'이산수학',cr:3,cat:'dr'},
+  {c:'CSE130',n:'알고리즘및실습',cr:3,cat:'dr'},
+  {c:'CSE131',n:'컴퓨터구조',cr:3,cat:'dr'},
+  {c:'CSE132',n:'운영체제',cr:3,cat:'dr'},
+  {c:'CSE133',n:'컴퓨터네트워크',cr:3,cat:'dr'},
+  {c:'CSE134',n:'공학설계Ⅰ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'CSE135',n:'공학설계Ⅱ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'CSE140',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'CSE141',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'CSE142',n:'졸업설계(캡스톤)',cr:6,cat:'dr',gd:true},
+  {c:'CSE143',n:'졸업설계(캡스톤)',cr:5,cat:'mr',gd:true},
+  {c:'CSE222',n:'소프트웨어공학',cr:3,cat:'de'},
+  {c:'CSE220',n:'자바프로그래밍',cr:3,cat:'de'},
+  {c:'CSE321',n:'IoT개론및실습',cr:3,cat:'de'},
+  {c:'CSE320',n:'IoT기초설계및실습',cr:3,cat:'de'},
+  {c:'CSE530',n:'인공지능기초및실습',cr:3,cat:'de'},
+  {c:'CSE532',n:'머신러닝및실습',cr:3,cat:'de'},
+  {c:'CSE533',n:'딥러닝및실습',cr:3,cat:'de'},
+  {c:'CSE540',n:'컴퓨터비젼및실습',cr:3,cat:'de'},
+  {c:'CSE541',n:'자연어처리및실습',cr:3,cat:'de'},
+  {c:'CSE542',n:'데이터마이닝',cr:3,cat:'de'},
+  {c:'CSE444',n:'증강현실및실습',cr:3,cat:'de'},
+  {c:'CSE442',n:'가상현실및실습',cr:3,cat:'de'},
+  {c:'CSE443',n:'컴퓨터보안',cr:3,cat:'de'},
+  {c:'CSE430',n:'웹프로그래밍(창업)',cr:3,cat:'de'},
+  // 에너지신소재화학공학부
+  {c:'CHA850',n:'전공탐색(에신)',cr:1,cat:'mf'},
+  {c:'MSA580',n:'신소재화학',cr:3,cat:'mf'},
+  {c:'MSA266',n:'재료공학실습1',cr:3,cat:'mr'},
+  {c:'MSA306',n:'재료공학실습2',cr:3,cat:'mr'},
+  {c:'MSA875',n:'재료기기분석및실습',cr:3,cat:'mr'},
+  {c:'CHA203',n:'기기분석설계및실습',cr:3,cat:'mr'},
+  {c:'MSA806',n:'공학설계(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'MSA819',n:'졸업설계(캡스톤)',cr:5,cat:'mr',gd:true},
+  {c:'MSA793',n:'공학설계Ⅰ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'MSA803',n:'공학설계Ⅱ(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'MSA816',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MSA817',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'MSA912',n:'디스플레이공학개론',cr:3,cat:'de'},
+  {c:'MSA911',n:'반도체공정및실습',cr:3,cat:'de'},
+  {c:'CHA500',n:'반도체소재개론',cr:3,cat:'de'},
+  {c:'CHA268',n:'배터리공학',cr:3,cat:'de'},
+  {c:'ENE332',n:'에너지소자기초및실습',cr:3,cat:'de'},
+  {c:'MSA420',n:'박막공학및실습',cr:3,cat:'me'},
+  {c:'MSA430',n:'계면공학및실습',cr:3,cat:'me'},
+  {c:'MSA251',n:'재료과학1',cr:3,cat:'me'},
+  {c:'MSA312',n:'재료과학2',cr:3,cat:'me'},
+  {c:'CHA233',n:'생화학',cr:3,cat:'me'},
+  {c:'CHA510',n:'유기반도체소자',cr:3,cat:'me'},
+  {c:'CHA412',n:'화학공정설계및실습',cr:3,cat:'me'},
+  {c:'ENE212',n:'에너지공학및실습',cr:3,cat:'me'},
+  // 산업경영학부
+  {c:'IMC700',n:'전공탐색(산경)',cr:1,cat:'mf'},
+  {c:'CCT720',n:'경영수학',cr:3,cat:'mf'},
+  {c:'CCT740',n:'경영통계및실습',cr:3,cat:'mf'},
+  {c:'CCT770',n:'경영데이터베이스및실습',cr:3,cat:'mf'},
+  {c:'IMA273',n:'경영과학',cr:3,cat:'mr'},
+  {c:'IMA392',n:'투자론',cr:3,cat:'mr'},
+  {c:'IMB380',n:'마케팅전략론',cr:3,cat:'mr'},
+  {c:'IMB421',n:'무역개론',cr:3,cat:'mr'},
+  {c:'IMC765',n:'빅데이터개론',cr:3,cat:'mr'},
+  {c:'IMC780',n:'재무자료분석과인공지능',cr:3,cat:'mr'},
+  {c:'IMC785',n:'투자및리스크관리',cr:3,cat:'mr'},
+  {c:'IMB390',n:'기업가정신(캡스톤)',cr:3,cat:'mr',gd:true},
+  {c:'SME300',n:'생산운영관리',cr:3,cat:'mr'},
+  {c:'SME355',n:'마케팅원론',cr:3,cat:'mr'},
+  {c:'SME370',n:'전사적자원관리',cr:3,cat:'mr'},
+  {c:'SME375',n:'생산전략',cr:3,cat:'mr'},
+  {c:'IMA644',n:'졸업및경력개발1(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'IMA645',n:'졸업및경력개발2(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'IMA646',n:'졸업및경력개발3(캡스톤)',cr:1,cat:'dr',gd:true},
+  {c:'IMA192',n:'경영학원론',cr:3,cat:'de'},
+  {c:'IMA252',n:'미시경제학',cr:4,cat:'de'},
+  {c:'IMB451',n:'창업실무',cr:3,cat:'de'},
+  {c:'IMC702',n:'기술전략',cr:3,cat:'de'},
+  {c:'IMD764',n:'공급체인관리론',cr:3,cat:'de'},
+  {c:'IMC455',n:'경영데이터분석및실습',cr:3,cat:'de'},
+  {c:'IMC532',n:'빅데이터와소셜네트워크분석',cr:4,cat:'me'},
+  {c:'IMC522',n:'머신러닝기반경영분석론',cr:4,cat:'me'},
+  {c:'IMD827',n:'서비스경영론',cr:4,cat:'me'},
+  {c:'IMC581',n:'경영시스템분석및최적화',cr:3,cat:'me'},
+  {c:'IMA703',n:'식스시그마경영',cr:4,cat:'me'},
+  {c:'IMC580',n:'시뮬레이션과디지털트윈',cr:3,cat:'me'},
+  {c:'SME290',n:'리더십과기업가정신',cr:3,cat:'me'},
+  {c:'SME350',n:'국제경영론',cr:3,cat:'me'},
+  // 고용서비스정책학과
+  {c:'ESP700',n:'전공탐색(고용)',cr:1,cat:'mf'},
+  {c:'CCT940',n:'경제학원론(기초)',cr:3,cat:'mf'},
+  {c:'CCT930',n:'경영학원론(기초)',cr:3,cat:'mf'},
+  {c:'CCT760',n:'사회조사분석(기초)',cr:3,cat:'mf'},
+  {c:'ESP100',n:'경제학원론',cr:3,cat:'mr'},
+  {c:'ESP130',n:'통계학',cr:3,cat:'mr'},
+  {c:'ESP140',n:'심리학개론',cr:3,cat:'mr'},
+  {c:'ESP160',n:'고용서비스정책론',cr:3,cat:'mr'},
+  {c:'ESP220',n:'사회조사방법론',cr:3,cat:'mr'},
+  {c:'ESP240',n:'고용관계법',cr:3,cat:'mr'},
+  {c:'ESP260',n:'직업정보론',cr:3,cat:'mr'},
+  {c:'ESP270',n:'직업심리검사',cr:3,cat:'mr'},
+  {c:'ESP290',n:'취업지원의실제',cr:3,cat:'mr'},
+  {c:'ESP300',n:'노동경제학',cr:3,cat:'mr'},
+  {c:'ESP320',n:'빅데이터와고용정보활용',cr:3,cat:'mr'},
+  {c:'ESP330',n:'직업상담의실제',cr:3,cat:'mr'},
+  {c:'ESP370',n:'노동법개론',cr:3,cat:'mr'},
+  {c:'ESP380',n:'사회보장법제론',cr:3,cat:'mr'},
+  {c:'ESP390',n:'졸업및경력개발1',cr:1,cat:'mr',gd:true},
+  {c:'ESP430',n:'졸업및경력개발2',cr:1,cat:'mr',gd:true},
+  {c:'ESP440',n:'졸업및경력개발3',cr:1,cat:'mr',gd:true},
+  {c:'ESP200',n:'인사노무관리론',cr:3,cat:'me'},
+  {c:'ESP280',n:'진로·직업상담기법',cr:3,cat:'me'},
+  {c:'ESP345',n:'생애개발상담',cr:3,cat:'me'},
+  {c:'ESP350',n:'심층직업상담',cr:3,cat:'me'},
+  {c:'ESP400',n:'AI와고용서비스활용',cr:3,cat:'me'},
+  {c:'ESP420',n:'고용AI캡스톤디자인',cr:3,cat:'me'},
+  // 디자인건축공학부
+  {c:'IDA960',n:'전공탐색(디자인)',cr:1,cat:'mf'},
+  {c:'IDA223',n:'기초디자인',cr:3,cat:'mf'},
+  {c:'IDA398',n:'디자인표현기초',cr:3,cat:'mf'},
+  {c:'IDA233',n:'크리에이티브스튜디오',cr:3,cat:'mr'},
+  {c:'IDA393',n:'디자인표현기법',cr:3,cat:'mr'},
+  {c:'IDA562',n:'조형디자인',cr:3,cat:'mr'},
+  {c:'IDA572',n:'메이킹스튜디오',cr:3,cat:'mr'},
+  {c:'IDA702',n:'스마트제품디자인(캡스톤)',cr:3,cat:'mr',gd:true},
+  {c:'IDA722',n:'융합제품디자인(캡스톤)',cr:3,cat:'mr',gd:true},
+  {c:'IDA583',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'IDA593',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'mr',gd:true},
+  {c:'IDA597',n:'졸업설계(캡스톤)',cr:5,cat:'dr',gd:true},
+  {c:'IDA618',n:'AI응용제품디자인(캡스톤)',cr:3,cat:'me'},
+  {c:'IDA737',n:'UX서비스디자인(캡스톤)',cr:4,cat:'me'},
+  {c:'IDA416',n:'디자인창업및특허',cr:3,cat:'me'},
+  {c:'ARB215',n:'건축기초설계',cr:2,cat:'mr'},
+  {c:'ARB406',n:'구조역학및실습',cr:3,cat:'mr'},
+  {c:'ARD718',n:'친환경건축설계스튜디오',cr:3,cat:'mr'},
+  {c:'ARE813',n:'건설공정관리및실습',cr:3,cat:'mr'},
+  {c:'ARB936',n:'졸업설계Ⅰ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'ARB937',n:'졸업설계Ⅱ(캡스톤)',cr:2,cat:'dr',gd:true},
+  {c:'ARB938',n:'졸업설계(캡스톤)',cr:6,cat:'dr',gd:true},
+  // 공통 전공선택
+  {c:'CVG421',n:'클라우드와AI서비스',cr:3,cat:'me'},
+  {c:'CVG344',n:'실감콘텐츠구현',cr:3,cat:'me'},
+  {c:'CVG570',n:'디지털트윈과CPS',cr:3,cat:'me'},
+  {c:'CVG500',n:'데이터시각화',cr:3,cat:'me'},
+  {c:'CVG601',n:'예측모델링과추론',cr:3,cat:'me'},
+  {c:'CVG610',n:'메타버스플랫폼활용',cr:3,cat:'me'},
+  {c:'CVG620',n:'XR응용서비스',cr:3,cat:'me'},
+  {c:'CVG541',n:'공간컴퓨팅기초프로그래밍',cr:3,cat:'me'},
+  {c:'CVG161',n:'협동로봇의활용',cr:3,cat:'me'},
+  {c:'MTD440',n:'인공지능',cr:3,cat:'me'},
+  {c:'MEH361',n:'PLC제어및응용',cr:3,cat:'me'},
+  {c:'MES416',n:'모빌리티시스템과딥러닝',cr:3,cat:'me'},
+  {c:'ISE120',n:'기계안전개론',cr:3,cat:'me'},
+  {c:'ISE130',n:'전기안전개론',cr:3,cat:'me'},
+  {c:'ISE140',n:'화학안전개론',cr:3,cat:'me'},
+  {c:'IMC821',n:'데이터기반고객경험분석',cr:3,cat:'me'},
+  {c:'IMC830',n:'프로젝트관리',cr:3,cat:'me'},
+];
+
+const HRD_REQ = [
+  {c:'TEA100',n:'HRD개론',cr:2},
+  {c:'HRD050',n:'경력개발이해와상담',cr:2},
+  {c:'CCT015',n:'HRD현장실습',cr:2},
+  {c:'HRD151',n:'교수설계및교육방법',cr:3},
+  {c:'HRD012',n:'직업능력개발훈련평가',cr:3},
+];
+
+const MAJORS = {
+  '전공 미선택':{ degree:'공학사', req:[], gd:[], mscReq:22, note:'' },
+  '기계공학부':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM317','BSM316','BSM333','BSM631','MEB700','MEB302','MEF666','MTB327','MTB332','MTB494','MTB403','MTB392'],
+    gd:['MEG876','MEG882','MEG892','MEG895'],
+    note:'전공기초(MSC 포함) + 전공필수 42학점 | 차세대에너지·시스템설계제조·스마트모빌리티 트랙 선택' },
+  '메카트로닉스공학부':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM317','BSM316','BSM631','MTA700','MTA443','MTA301','MTB403','MTB494','MTB327','MTC394','MTE850','MTC612'],
+    gd:['MTC743','MTC753','MTC905','MTC906'],
+    note:'생산시스템/제어시스템/디지털시스템 트랙 선택 필수' },
+  '전기전자통신공학부':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM317','BSM316','BSM333','BSM631','IFE700','IFE157','IFA101','IFC122','IFC125','IFB163','IFB233','IFB411'],
+    gd:['IFA462','IFA472','IFA495','IFB372','IFB382','IFB405','IFC452','IFC462','IFC466'],
+    note:'전기/전자/정보통신 트랙 선택 | 졸업설계 6학점 필수' },
+  '컴퓨터공학부':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM317','BSM316','BSM631','CSE700','CSE111','CSE115','CSE110','CSE112','CSE114','CSE123','CSE124','CSE125','CSE130','CSE131','CSE132','CSE133'],
+    gd:['CSE134','CSE135','CSE140','CSE141','CSE142','CSE143'],
+    note:'스마트IoT/소프트웨어/AI 트랙 | 졸업설계 6학점 필수' },
+  '에너지신소재화학공학부':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM717','BSM716','BSM718','BSM317','BSM316','BSM631','CHA850','MSA580','MSA266','MSA306','MSA875','CHA203'],
+    gd:['MSA793','MSA803','MSA806','MSA816','MSA817','MSA819'],
+    note:'에너지신소재/화학생명 트랙 | 기초과학 실험 포함 필수' },
+  '산업경영학부':{ degree:'경영학사', mscReq:9,
+    req:['BSM102','BSM631','IMC700','CCT720','CCT740','CCT770','IMA273','IMA392','IMB380','IMB421','IMC765','IMC780','IMC785','IMB390','SME300','SME355','SME370','SME375'],
+    gd:['IMA644','IMA645','IMA646'],
+    note:'경영학사 140학점 | 융합경영/데이터경영 트랙 선택' },
+  '고용서비스정책학과':{ degree:'고용학사', mscReq:9,
+    req:['BSM102','BSM631','ESP700','CCT940','CCT930','CCT760','ESP100','ESP130','ESP140','ESP160','ESP220','ESP240','ESP260','ESP270','ESP290','ESP300','ESP330','ESP370','ESP380'],
+    gd:['ESP390','ESP430','ESP440'],
+    note:'고용학사 140학점 | 수리적사고 9학점' },
+  '디자인건축공학부(디자인)':{ degree:'공학사', mscReq:13,
+    req:['BSM102','BSM631','IDA960','IDA223','IDA398','IDA233','IDA393','IDA562','IDA572','IDA702','IDA722'],
+    gd:['IDA583','IDA593','IDA597'],
+    note:'교양 38학점(수리적사고 13학점) | 기초설계 포함' },
+  '디자인건축공학부(건축)':{ degree:'공학사', mscReq:22,
+    req:['BSM102','BSM317','BSM316','BSM333','BSM631','ARB215','ARB406','ARD718','ARE813'],
+    gd:['ARB936','ARB937','ARB938'],
+    note:'건축공학 전공 | 졸업설계 필수' },
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let ST = {
+  degree: '공학사',
+  major: '전공 미선택',
+  sems: Array.from({length:8}, ()=>[]),
+  ippSems: new Set(),
+  modal: null,
+  q: '',
+  filt: 'all',
+};
+let uid = 0;
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function codeMap(){ const m={}; COURSES.forEach(c=>m[c.c]=c); return m; }
+const CMAP = codeMap();
+function addedCodes(){ return new Set(ST.sems.flat().map(c=>c.c)); }
+function calcByCAT(){
+  const m={};
+  ST.sems.flat().forEach(c=>{
+    m[c.cat]=(m[c.cat]||0)+c.cr;
+    if(c.sub) m['msc_'+c.sub]=(m['msc_'+c.sub]||0)+c.cr;
+  });
+  return m;
+}
+function totalCr(){ return ST.sems.flat().reduce((s,c)=>s+c.cr,0); }
+function semCr(i){ return ST.sems[i].reduce((s,c)=>s+c.cr,0); }
+function isGD(c){ return c.gd===true; }
+function isIPP(c){ return c.ipp===true; }
+
+function getWarnings(){
+  const ws=[];
+  ST.ippSems.forEach(i=>{ if(i<4) ws.push(`${Math.floor(i/2)+1}학년 ${i%2+1}학기 IPP 설정 → IPP는 4학기 이수 후(3~4학년)부터 지원 가능합니다.`); });
+  ST.sems.forEach((sem,si)=>{
+    if(si<4) sem.forEach(c=>{ if(isGD(c)) ws.push(`${Math.floor(si/2)+1}학년 ${si%2+1}학기 '${c.n}' → 졸업설계는 3~4학년 배치를 권장합니다.`); });
+    const cr=semCr(si);
+    if(!ST.ippSems.has(si) && cr>21) ws.push(`${Math.floor(si/2)+1}학년 ${si%2+1}학기: ${cr}학점 → 학기 최대 이수학점(21학점) 초과`);
+  });
+  return ws;
+}
+
+function pctBar(got,req,color){
+  const p=req>0?Math.min(100,Math.round(got/req*100)):100;
+  return `<div class="req-mini-bar"><div class="req-mini-fill" style="width:${p}%;background:${got>=req?'#059669':color}"></div></div>`;
+}
+function reqRow(label,got,req,color,note=''){
+  const ok=got>=req, part=got>0&&!ok;
+  const cls=ok?'ok':part?'part':'warn';
+  return `${pctBar(got,req,color)}
+<div class="req-row">
+  <div class="req-dot" style="background:${ok?'#059669':color}"></div>
+  <span class="req-lbl">${label}${note?`<span class="req-sub">${note}</span>`:''}</span>
+  <span class="req-val ${cls}">${got}/${req}</span>
+</div>`;
+}
+function subRow(label,got,req,color,indent=true){
+  const ok=got>=req, part=got>0&&!ok;
+  const cls=ok?'ok':part?'part':'warn';
+  return `<div class="req-row" style="${indent?'padding-left:10px':''}">
+  <div class="req-dot" style="width:5px;height:5px;background:${ok?'#059669':color}"></div>
+  <span class="req-lbl" style="font-size:10px">${label}</span>
+  <span class="req-val ${cls}" style="font-size:10px">${got}/${req}</span>
+</div>`;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render(){
+  const b=calcByCAT();
+  const tot=totalCr();
+  const mj=MAJORS[ST.major]||MAJORS['전공 미선택'];
+  const dc=DEGREE_CONFIG[ST.degree]||DEGREE_CONFIG['공학사'];
+  const reqTotal=dc.total;
+  const pct=Math.min(100,Math.round(tot/reqTotal*100));
+  const totColor=tot>=reqTotal?'#059669':'#1d4ed8';
+  const added=addedCodes();
+  const mscR=MAJORS[ST.major]?.mscReq ?? dc.mscReq;
+
+  // Credits by section
+  const kor=b.kor||0, eng=b.eng||0;
+  const mscMath=b.msc_math||0, mscSci=b.msc_sci||0, mscCs=b.msc_cs||0;
+  const mscTotal=mscMath+mscSci+mscCs;
+  const ins=b.insung||0, arts=b.arts||0, soc=b.social||0, hist=b.history||0, nat=b.nature||0;
+  const genFree=b.gen_free||0;
+  const libTotal=kor+eng+mscTotal+ins+arts+soc+hist+nat+genFree;
+  const hrdR=b.hrd_r||0, hrdE=b.hrd_e||0, hrdTotal=hrdR+hrdE;
+  const mfG=b.mf||0, mrG=b.mr||0, meG=b.me||0, drG=b.dr||0, deG=b.de||0;
+  const majTotal=mfG+mrG+meG+drG+deG;
+  const freeG=b.free||0;
+  const ws=getWarnings();
+
+  // Required/GD checklist
+  const reqMissing=(mj.req||[]).filter(c=>!added.has(c)).length;
+  const gdMissing=(mj.gd||[]).filter(c=>!added.has(c)).length;
+
+  // Sidebar badge helpers
+  const libBadge=()=>{
+    const ok=libTotal>=dc.교양;
+    return `<span class="badge ${ok?'ok':''}">${libTotal}/${dc.교양}</span>`;
+  };
+  const hrdBadge=()=>{
+    const ok=hrdTotal>=dc.HRD;
+    return `<span class="badge ${ok?'ok':'warn'}">${hrdTotal}/${dc.HRD}</span>`;
+  };
+  const majBadge=()=>{
+    const ok=majTotal>=dc.전공;
+    return `<span class="badge ${ok?'ok':''}">${majTotal}/${dc.전공}</span>`;
+  };
+
+  // ---- SIDEBAR ----
+  document.getElementById('sidebar').innerHTML = `
+    <div class="total-block">
+      <div class="total-row">
+        <span class="total-num" style="color:${totColor}">${tot}</span>
+        <span class="total-of">이수 학점</span>
+        <span class="total-pct">/ ${reqTotal}학점 (${pct}%)</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${totColor}"></div></div>
+    </div>
+
+    <div class="sb-card">
+      <div class="sb-card-head">📚 교양 ${libBadge()}</div>
+      <div class="sb-body">
+        <div class="grp-label">기초교양 (8학점)</div>
+        ${reqRow('국어',kor,3,'#4338ca','창의적사고와글쓰기 등 1과목')}
+        ${reqRow('영어',eng,5,'#2563eb','영어읽기(3)+회화(1)+청해(1)')}
+        <div class="grp-label">수리적사고 (${mscR}학점)</div>
+        ${subRow('수학 영역 (1과목 이상)',mscMath,mscR>=22?6:3,'#0891b2')}
+        ${subRow('기초과학 영역 (실험포함 1과목 이상)',mscSci,mscR>=22?10:3,'#0891b2')}
+        ${subRow('전산 영역 (1과목 이상)',mscCs,3,'#0891b2')}
+        <div class="grp-label">일반교양 (14학점)</div>
+        ${subRow('인성과 소양',ins,2,'#d97706')}
+        ${subRow('예술과 문학',arts,3,'#7c3aed')}
+        ${subRow('사회와 심리',soc,3,'#0369a1')}
+        ${subRow('역사와 철학',hist,3,'#b45309')}
+        ${subRow('자연과 인간',nat,3,'#059669')}
+        <div class="grp-label">교양선택 (3학점)</div>
+        ${subRow('교양선택',genFree,3,'#6b7280')}
+      </div>
+    </div>
+
+    <div class="sb-card">
+      <div class="sb-card-head">🎯 HRD 부전공 ${hrdBadge()}</div>
+      <div class="sb-body">
+        ${subRow('필수 5과목 (12학점)',hrdR,12,'#dc2626',false)}
+        ${subRow('선택 (4학점)',hrdE,4,'#f97316',false)}
+        <div class="grp-label">HRD 필수 5과목 체크</div>
+        ${HRD_REQ.map(h=>{
+          const done=added.has(h.c);
+          return `<div class="chk-item ${done?'done':''}">
+            <span class="chk-icon">${done?'✓':'○'}</span>
+            <span class="chk-name">${h.n}</span>
+            <span class="chk-cr">${h.cr}학점</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="sb-card">
+      <div class="sb-card-head">🔬 전공 ${majBadge()}</div>
+      <div class="sb-body">
+        ${subRow('전공기초',mfG,12,'#7c3aed',false)}
+        ${subRow('학부공통필수',drG,0,'#6366f1',false)}
+        ${subRow('전공필수',mrG,30,'#9333ea',false)}
+        ${subRow('전공선택',meG,28,'#a855f7',false)}
+        ${subRow('학부공통선택',deG,0,'#818cf8',false)}
+      </div>
+    </div>
+
+    <div class="sb-card">
+      <div class="sb-card-head">🆓 자유선택</div>
+      <div class="sb-body">${subRow('자유선택',freeG,dc.자유,'#9ca3af',false)}</div>
+    </div>
+
+    ${ST.major!=='전공 미선택'?`
+    <div class="sb-card">
+      <div class="sb-card-head">📋 ${ST.major} 필수과목
+        <span class="badge ${reqMissing===0?'ok':'warn'}">${reqMissing===0?'완료':reqMissing+'개 미이수'}</span>
+      </div>
+      <div class="sb-body">
+        ${mj.note?`<div style="font-size:10px;color:#6b7280;padding:3px 0 5px;border-bottom:1px solid #e5e7eb;margin-bottom:4px;line-height:1.4">${mj.note}</div>`:''}
+        <div class="grp-label">핵심 필수</div>
+        ${(mj.req||[]).map(code=>{
+          const course=CMAP[code];
+          const done=added.has(code);
+          return `<div class="chk-item ${done?'done':''}">
+            <span class="chk-icon">${done?'✓':'○'}</span>
+            <span class="chk-name">${course?course.n:code}</span>
+            <span class="chk-cr">${course?course.cr+'학점':''}</span>
+          </div>`;
+        }).join('')}
+        ${(mj.gd||[]).length>0?`
+        <div class="grp-label" style="color:#b45309">졸업설계 (3~4학년 이수)</div>
+        ${(mj.gd||[]).map(code=>{
+          const course=CMAP[code];
+          const done=added.has(code);
+          return `<div class="chk-item ${done?'done':''}">
+            <span class="chk-icon" style="color:${done?'#059669':'#b45309'}">${done?'✓':'△'}</span>
+            <span class="chk-name" style="color:${done?'#059669':'#b45309'}">${course?course.n:code}</span>
+            <span class="chk-cr">${course?course.cr+'학점':''}</span>
+          </div>`;
+        }).join('')}`:''}
+      </div>
+    </div>`:''}
+
+    <div class="sb-card">
+      <div class="sb-card-head" style="${ws.length>0?'color:#dc2626':''}">
+        ${ws.length>0?`⚠ 주의 (${ws.length}건)`:'✓ 이상 없음'}
+      </div>
+      ${ws.length>0
+        ?`<div class="warn-list">${ws.map(w=>`<div class="warn-line">${w}</div>`).join('')}</div>`
+        :`<div class="sb-body"><div class="ok-line">모든 요건이 정상입니다</div></div>`}
+    </div>
+  `;
+
+  // ---- SEMESTER GRID ----
+  document.getElementById('semGrid').innerHTML = ST.sems.map((sem,si)=>{
+    const yr=Math.floor(si/2)+1, sn=si%2+1;
+    const isIPPSem=ST.ippSems.has(si);
+    const canIPP=si>=4;
+    const cr=semCr(si);
+    const crOver=cr>21&&!isIPPSem;
+
+    const ippCrs=sem.filter(c=>isIPP(c));
+    const normalCrs=sem.filter(c=>!isIPP(c));
+
+    let coursesHTML='';
+    if(isIPPSem){
+      const ippCr=ippCrs.reduce((s,c)=>s+c.cr,0);
+      coursesHTML=`<div class="ipp-banner">
+        🏭 <strong>IPP 장기현장실습 학기</strong><br>
+        <small>4개월(6학점) · 6개월(9학점) · 성적: S/U 처리</small>
+        ${ippCr>0?`<br><strong>${ippCr}학점 등록됨</strong>`:'<br><small style="color:#0e7490">아래 버튼으로 IPP 과목 추가</small>'}
+      </div>`;
+      coursesHTML+=ippCrs.map(c=>`<div class="chip">
+        <div class="chip-dot" style="background:#0891b2"></div>
+        <span class="chip-name">${c.n}</span>
+        <span class="chip-cr">${c.cr}학점</span>
+        <button class="chip-del" onclick="delC(${si},'${c._id}')">×</button>
+      </div>`).join('');
+    } else {
+      coursesHTML=normalCrs.map(c=>{
+        const gdWarn=isGD(c)&&si<4;
+        return `<div class="chip ${gdWarn?'gd-warn':''}">
+          <div class="chip-dot" style="background:${CC[c.cat]||'#9ca3af'}"></div>
+          <span class="chip-name" title="${c.n}${gdWarn?' ⚠졸업설계 시기 주의':''}">${c.n}</span>
+          <span class="chip-cr">${c.cr}학점</span>
+          <button class="chip-del" onclick="delC(${si},'${c._id}')">×</button>
+        </div>`;
+      }).join('');
+    }
+    coursesHTML+=`<button class="add-btn" onclick="openModal(${si})">＋ 과목 추가</button>`;
+
+    return `<div class="sem-card ${isIPPSem?'ipp':''} ${crOver?'over':''}">
+      <div class="sem-hdr">
+        <span class="sem-yr">${yr}학년 ${sn}학기</span>
+        ${isIPPSem?'<span class="ipp-pill">IPP</span>':''}
+        <span class="sem-cr ${crOver?'over':''}">${cr}학점${crOver?' ⚠':''}</span>
+        ${canIPP
+          ?`<button class="ipp-btn ${isIPPSem?'on':''}" onclick="toggleIPP(${si})">${isIPPSem?'IPP 해제':'IPP 설정'}</button>`
+          :`<button class="ipp-btn" disabled title="3학년부터 가능">IPP</button>`}
+      </div>
+      <div class="sem-body">${coursesHTML}</div>
+    </div>`;
+  }).join('');
+
+  // ---- MODAL ----
+  if(ST.modal!==null){
+    const si=ST.modal;
+    const yr=Math.floor(si/2)+1, sn=si%2+1;
+    const isIPPSem=ST.ippSems.has(si);
+    const mj2=MAJORS[ST.major]||MAJORS['전공 미선택'];
+    const reqSet=new Set(mj2.req||[]);
+    const gdSet=new Set(mj2.gd||[]);
+    const addedSet=addedCodes();
+
+    const filterCats=isIPPSem
+      ?[{k:'all',l:'전체'},{k:'mr',l:'IPP 과목'}]
+      :[
+        {k:'all',l:'전체'},{k:'kor',l:'국어'},{k:'eng',l:'영어'},{k:'msc',l:'수리적사고'},
+        {k:'insung',l:'인성소양'},{k:'arts',l:'예술문학'},{k:'social',l:'사회심리'},
+        {k:'history',l:'역사철학'},{k:'nature',l:'자연인간'},{k:'gen_free',l:'교양선택'},
+        {k:'hrd_r',l:'HRD필수'},{k:'hrd_e',l:'HRD선택'},
+        {k:'mf',l:'전공기초'},{k:'mr',l:'전공필수'},{k:'me',l:'전공선택'},
+        {k:'dr',l:'학부공통필수'},{k:'de',l:'학부공통선택'},{k:'free',l:'자유선택'},
+      ];
+
+    const q2=ST.q.toLowerCase();
+    let filtered=COURSES.filter(c=>{
+      if(isIPPSem && !isIPP(c)) return false;
+      if(ST.filt!=='all' && c.cat!==ST.filt) return false;
+      if(q2 && !c.n.toLowerCase().includes(q2) && !c.c.toLowerCase().includes(q2)) return false;
+      return true;
+    }).slice(0,80);
+
+    // Sort: required first, then gd, then rest
+    filtered.sort((a,b)=>{
+      const aR=reqSet.has(a.c)?0:gdSet.has(a.c)?1:2;
+      const bR=reqSet.has(b.c)?0:gdSet.has(b.c)?1:2;
+      return aR-bR;
+    });
+
+    const filterBtns=filterCats.map(f=>`<button class="fpill ${ST.filt===f.k?'on':''}" onclick="setFilt('${f.k}')">${f.l}</button>`).join('');
+    const items=filtered.length?filtered.map(c=>{
+      const isR=reqSet.has(c.c), isGd=gdSet.has(c.c), alr=addedSet.has(c.c);
+      return `<div class="modal-item" onclick="addC(${si},'${c.c}')">
+        <div class="mi-dot" style="background:${CC[c.cat]||'#9ca3af'}"></div>
+        <div class="mi-info">
+          <div class="mi-name">
+            ${c.n}
+            ${alr?'<span class="mi-added">✓ 추가됨</span>':''}
+            ${isR?'<span class="mi-req">필수</span>':''}
+            ${isGd?'<span class="mi-gd">졸업설계</span>':''}
+          </div>
+          <div class="mi-sub">${CL[c.cat]||c.cat} · ${c.c}</div>
+        </div>
+        <span class="mi-cr">${c.cr}학점</span>
+      </div>`;
+    }).join(''):`<div class="modal-empty">검색 결과가 없습니다<br><small>다른 필터나 검색어를 사용해보세요</small></div>`;
+
+    document.getElementById('modalWrap').innerHTML=`
+      <div class="modal-overlay" onclick="closeOuter(event)">
+        <div class="modal">
+          <div class="modal-hdr">
+            <span class="modal-title">${yr}학년 ${sn}학기 — 과목 추가${isIPPSem?' (IPP 현장실습 등록)':''}</span>
+            <button class="modal-close" onclick="closeModal()">×</button>
+          </div>
+          <div class="modal-search">
+            <input type="text" id="msrch" placeholder="과목명 또는 코드로 검색..." value="${ST.q}" oninput="setQ(this.value)">
+            ${si>=4?`<button class="modal-ipp-btn" onclick="setFilt('mr');setQ('IPP')">IPP 과목</button>`:''}
+          </div>
+          <div class="modal-filters">${filterBtns}</div>
+          <div class="modal-list">${items}</div>
+        </div>
+      </div>`;
+    setTimeout(()=>{const el=document.getElementById('msrch');if(el){el.focus();const v=el.value;el.value='';el.value=v;}},0);
+  } else {
+    document.getElementById('modalWrap').innerHTML='';
+  }
+
+  // ---- DEGREE TABS ----
+  document.getElementById('degTabs').innerHTML=['공학사','경영학사','고용학사'].map(d=>
+    `<button class="deg-tab ${ST.degree===d?'on':''}" onclick="setDegree('${d}')">${d}</button>`
+  ).join('');
+}
+
+function renderMajorSelect(){
+  const sel=document.getElementById('majorSel');
+  sel.innerHTML=Object.keys(MAJORS).map(m=>`<option value="${m}" ${ST.major===m?'selected':''}>${m}</option>`).join('');
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function setDegree(d){
+  ST.degree=d;
+  // auto-match degree if major has preferred degree
+  const mj=MAJORS[ST.major];
+  if(mj&&mj.degree&&mj.degree!==d){/* keep user's selection */}
+  render();
+}
+function setMajor(m){
+  ST.major=m;
+  const mj=MAJORS[m];
+  if(mj&&mj.degree) ST.degree=mj.degree;
+  renderMajorSelect();
+  render();
+}
+function toggleIPP(si){
+  if(si<4){ alert('⚠ IPP 장기현장실습 안내\n\nIPP는 4학기(2학년 2학기) 이수 후 신청 가능합니다.\n3~4학년 학기(5~8학기)에만 설정할 수 있습니다.'); return; }
+  if(ST.ippSems.has(si)) ST.ippSems.delete(si);
+  else ST.ippSems.add(si);
+  render();
+}
+function openModal(si){ ST.modal=si; ST.q=''; ST.filt='all'; render(); }
+function closeModal(){ ST.modal=null; render(); }
+function closeOuter(e){ if(e.target.classList.contains('modal-overlay')) closeModal(); }
+function setQ(v){ ST.q=v; render(); }
+function setFilt(f){ ST.filt=f; render(); }
+function addC(si,code){
+  const course=COURSES.find(c=>c.c===code);
+  if(!course) return;
+  const nc={...course, _id:`${code}_${++uid}`};
+  ST.sems[si]=[...ST.sems[si],nc];
+  ST.modal=null;
+  render();
+}
+function delC(si,id){
+  ST.sems[si]=ST.sems[si].filter(c=>c._id!==id);
+  render();
+}
+
+// Keyboard shortcut: Escape to close modal
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&ST.modal!==null) closeModal(); });
+
+// Init
+renderMajorSelect();
+render();
+</script>
+</body>
+</html>
